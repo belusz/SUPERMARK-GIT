@@ -4,13 +4,6 @@ from tkinter import ttk
 import sqlite3
 from sqlite3 import Error
 import tkinter.messagebox
-from pathlib import Path
-
-OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\abelu\Documents\Python - Mil programadores salteños\PROYECTO SUPERMARK\SUPERMARK GIT\Interfaz\assets\frame0")
-
-def relative_to_assets(path: str) -> Path:
-    return ASSETS_PATH / Path(path)
 
 def create_connection(db_file):
     """create a database connection to the SQLite database
