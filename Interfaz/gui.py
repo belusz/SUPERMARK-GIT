@@ -20,6 +20,17 @@ def relative_to_assets(path: str) -> Path:
 
 window = Tk()
 
+#Cambiar ícono y nombre de la ventana
+
+#Con archivo .ico
+#window.iconbitmap(r"C:\Users\abelu\Documents\Python - Mil programadores salteños\PROYECTO SUPERMARK\SUPERMARK GIT\Interfaz\supermark.ico")
+
+icono=PhotoImage(file="Interfaz/carro.png")
+window.iconphoto(False,icono)
+
+
+window.title("Supermark")
+
 window.geometry("1142x766")
 window.configure(bg = "#FFFFFF")
 
