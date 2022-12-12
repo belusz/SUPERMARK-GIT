@@ -1,6 +1,6 @@
 
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk,PhotoImage
 import sqlite3
 from sqlite3 import Error
 import tkinter.messagebox
@@ -47,7 +47,8 @@ class App(ttk.Frame):
         self.parent = parent    # guardamos una referencia de la ventana ppal
         parent.title("Bienvenido a Supermark - Login")
         parent.geometry("400x200+100+100")
-        self.parent.iconbitmap("Interfaz/carro.ico")
+        icono=PhotoImage(file="Interfaz/assets/carro.png")
+        self.parent.iconphoto(False,icono)
         self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
         parent.columnconfigure(0, weight=1)
         parent.rowconfigure(0, weight=1)
