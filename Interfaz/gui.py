@@ -57,13 +57,13 @@ image_1 = canvas.create_image(
 image_image_2 = PhotoImage(
     file=relative_to_assets("image_2.png"))
 image_2 = canvas.create_image(
-    851.0,
+    868.0,
     384.0,
     image=image_image_2
 )
 
 canvas.create_text(
-    160.0,
+    190.0,
     170.0,
     anchor="nw",
     text="BIENVENIDO A ",
@@ -198,8 +198,8 @@ canvas.create_text(
 image_image_3 = PhotoImage(
     file=relative_to_assets("image_3.png"))
 image_3 = canvas.create_image(
-    276.0,
-    434.0,
+    305.0,
+    394.0,
     image=image_image_3
 )
 
