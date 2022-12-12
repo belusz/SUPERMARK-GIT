@@ -25,7 +25,7 @@ window = Tk()
 #Con archivo .ico
 #window.iconbitmap(r"C:\Users\abelu\Documents\Python - Mil programadores salteños\PROYECTO SUPERMARK\SUPERMARK GIT\Interfaz\supermark.ico")
 
-icono=PhotoImage(file="Interfaz/carro.png")
+icono=PhotoImage(file="Interfaz/assets/carro.png")
 window.iconphoto(False,icono)
 
 
