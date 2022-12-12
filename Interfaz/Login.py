@@ -13,7 +13,6 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\abelu\Documents\Python - Mil programadores salteños\PROYECTO SUPERMARK\SUPERMARK GIT\Interfaz\assets\frame0")
 
-
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
@@ -27,13 +26,9 @@ window = Tk()
 
 icono=PhotoImage(file="Interfaz/assets/carro.png")
 window.iconphoto(False,icono)
-
-
 window.title("Supermark")
-
 window.geometry("1142x766")
 window.configure(bg = "#FFFFFF")
-
 
 canvas = Canvas(
     window,
@@ -210,5 +205,6 @@ canvas.create_rectangle(
     398.0,
     fill="#000000",
     outline="")
+
 window.resizable(False, False)
 window.mainloop()
