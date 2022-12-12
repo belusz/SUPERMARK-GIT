@@ -90,7 +90,7 @@ canvas.create_text(
     714.0,
     48.0,
     anchor="nw",
-    text="Usuario",
+    text="E-mail",
     fill="#000000",
     font=("Nokora Bold", 20 * -1)
 )
