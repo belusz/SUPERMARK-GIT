@@ -46,6 +46,8 @@ class App(ttk.Frame):
         super().__init__(parent, padding=(20))
         parent.title("Ventana Login")
         parent.geometry("1142x766")
+        icono=PhotoImage(file="Interfaz/assets/carro.png")
+        parent.iconphoto(False,icono)
         parent.resizable(False, False)
 
         self.canvas = Canvas(
