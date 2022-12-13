@@ -223,7 +223,7 @@ class Administrador(ttk.Frame):
 class Registro(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, padding=(20))
-        parent.title("Ventana Registro")
+        parent.title("Registrarse")
         icono3=PhotoImage(file="Interfaz/assets/frame1/registrar.png")
         parent.iconphoto(False,icono3)
         parent.geometry("350x100+180+100")
