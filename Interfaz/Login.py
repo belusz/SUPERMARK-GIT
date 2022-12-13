@@ -44,11 +44,15 @@ def validate_tipo_user(email):
 class App(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, padding=(20))
+        self.parent=parent
         parent.title("Ventana Login")
         parent.geometry("1142x766")
         icono=PhotoImage(file="Interfaz/assets/carro.png")
         parent.iconphoto(False,icono)
         parent.resizable(False, False)
+        
+        self.email = tk.StringVar()
+        self.clave = tk.StringVar()
 
         self.canvas = Canvas(
             parent,
@@ -80,7 +84,7 @@ class App(ttk.Frame):
         self.entry_bg_1 = self.canvas.create_image(
             849.0, 102.0, image=self.entry_image_1
         )
-        self.entry_1 = Entry(bd=0, bg="#D9D9D9", fg="#000716", highlightthickness=0)
+        self.entry_1 = Entry(bd=0, bg="#D9D9D9", fg="#000716", highlightthickness=0,textvariable=self.email)
         self.entry_1.place(x=713.0, y=85.0, width=272.0, height=32.0)
 
         self.canvas.create_text(
@@ -96,7 +100,7 @@ class App(ttk.Frame):
         self.entry_bg_2 = self.canvas.create_image(
             847.0, 184.0, image=self.entry_image_2
         )
-        self.entry_2 = Entry(bd=0, bg="#D9D9D9", fg="#000716", highlightthickness=0)
+        self.entry_2 = Entry(bd=0, bg="#D9D9D9", fg="#000716", highlightthickness=0,textvariable=self.clave)
         self.entry_2.place(x=711.0, y=167.0, width=272.0, height=32.0)
 
         self.canvas.create_text(
@@ -113,7 +117,7 @@ class App(ttk.Frame):
             image=self.button_image_1,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_1 clicked"),
+            command=lambda: self.abrir_recuperacion(),
             relief="flat",
         )
         self.button_1.place(x=898.0, y=242.0, width=178.0, height=54.0)
@@ -132,7 +136,7 @@ class App(ttk.Frame):
             image=self.button_image_2,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_2 clicked"),
+            command=lambda: self.abrir_ventana(),
             relief="flat",
         )
         self.button_2.place(x=705.0, y=334.0, width=283.0, height=55.687255859375)
@@ -142,7 +146,7 @@ class App(ttk.Frame):
             image=self.button_image_3,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_3 clicked"),
+            command=lambda: self.abrir_registro(),
             relief="flat",
         )
         self.button_3.place(x=699.0, y=504.0, width=283.0, height=55.68719482421875)
@@ -177,8 +181,16 @@ class App(ttk.Frame):
                 toplevel = tk.Toplevel(self.parent)
                 Cliente(toplevel).grid()
         else:
-            tkinter.messagebox.showinfo("Error", "Usuario o Contraseña Incorrecta")
-
+            if self.email.get() == '' or self.clave.get() == '':
+                tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
+            else:
+                tkinter.messagebox.showinfo("Error", "Usuario o Contraseña incorrecto",icon='error')
+            
+            
+    def abrir_recuperacion(self):
+        toplevel = tk.Toplevel(self.parent)
+        Recuperacion(toplevel).grid()
+        
     def abrir_registro(self):
         toplevel = tk.Toplevel(self.parent)
         Registro(toplevel).grid()
@@ -212,12 +224,27 @@ class Registro(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, padding=(20))
         parent.title("Ventana Registro")
+        icono3=PhotoImage(file="Interfaz/assets/frame1/registrar.png")
+        parent.iconphoto(False,icono3)
         parent.geometry("350x100+180+100")
         self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
         parent.columnconfigure(0, weight=1)
         parent.rowconfigure(0, weight=1)
         parent.resizable(False, False)
-        ttk.Button(self, text="Cerrar", command=parent.destroy).grid()
+        ttk.Button(self, text="Cancelar", command=parent.destroy).grid()
+        
+class Recuperacion(ttk.Frame):
+    def __init__(self, parent):
+        super().__init__(parent, padding=(20))
+        parent.title("Recuperacion de Contraseña")
+        icono2=PhotoImage(file="Interfaz/assets/frame1/recuperar.png")
+        parent.iconphoto(False,icono2)
+        parent.geometry("350x100+180+100")
+        self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
+        parent.columnconfigure(0, weight=1)
+        parent.rowconfigure(0, weight=1)
+        parent.resizable(False, False)
+        ttk.Button(self, text="Cancelar", command=parent.destroy).grid()        
 
 
 root = tk.Tk()
