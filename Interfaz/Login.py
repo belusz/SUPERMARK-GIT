@@ -45,7 +45,7 @@ class App(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, padding=(20))
         self.parent=parent
-        parent.title("Ventana Login")
+        parent.title("Bienvenido a Supermark")
         parent.geometry("1142x766")
         icono=PhotoImage(file="Interfaz/assets/carro.png")
         parent.iconphoto(False,icono)
