@@ -4,6 +4,7 @@ from tkinter import ttk
 import sqlite3
 from sqlite3 import Error
 import tkinter.messagebox
+from forms.form_usuario import UsuarioPanel
 
 def create_connection(db_file):
     """create a database connection to the SQLite database
@@ -102,6 +103,7 @@ class App(ttk.Frame):
         )
         self.entry_2 = Entry(bd=0, bg="#D9D9D9", fg="#000716", highlightthickness=0,textvariable=self.clave)
         self.entry_2.place(x=711.0, y=167.0, width=272.0, height=32.0)
+        self.entry_2.config(show="*")
 
         self.canvas.create_text(
             715.5568237304688,
@@ -110,7 +112,7 @@ class App(ttk.Frame):
             text="Contraseña",
             fill="#000000",
             font=("Nokora Bold", 20 * -1),
-        )
+        ) 
 
         self.button_image_1 = PhotoImage(file="Interfaz/assets/frame0/button_1.png")
         self.button_1 = Button(
@@ -177,9 +179,11 @@ class App(ttk.Frame):
             if validate_tipo_user(self.email.get()) == "admin":
                 toplevel = tk.Toplevel(self.parent)
                 Administrador(toplevel).grid()
+                #AdminPanel()
             else:
-                toplevel = tk.Toplevel(self.parent)
-                Cliente(toplevel).grid()
+                #toplevel = tk.Toplevel(self.parent)
+                #Cliente(toplevel).grid()
+                UsuarioPanel()
         else:
             if self.email.get() == '' or self.clave.get() == '':
                 tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
