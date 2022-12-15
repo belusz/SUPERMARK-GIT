@@ -15,7 +15,8 @@ from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
 from SupermarkBDD.insert_bdd_supermarket import *
-
+from Consultas.update_supermark import *
+from Consultas.consultas_supermark import *
 
 
 def create_connection(db_file):
@@ -515,22 +516,47 @@ class Recuperacion(ttk.Frame):
         parent.rowconfigure(0, weight=1)
         parent.resizable(False, False)  
         
+        self.email = tk.StringVar()
+        self.clave = tk.StringVar()
+        self.clave2 = tk.StringVar()
+        
         ttk.Label(self, text="Email:").grid(pady=5, row=0, column=0)
         ttk.Label(self, text="Ingrese nueva contraseña:").grid( pady=5, row=1, column=0)
         ttk.Label(self, text="Repetir nueva contraseña:").grid( pady=5, row=2, column=0)
 
-        ttk.Entry(self, width=40).grid(padx=5, row=0, column=1)
-        ttk.Entry(self, width=40).grid(padx=5, row=1, column=1)
-        ttk.Entry(self, width=40).grid(padx=5, row=2, column=1)
+        ttk.Entry(self, width=40, textvariable=self.email).grid(padx=5, row=0, column=1)
+        ttk.Entry(self, width=40, textvariable=self.clave).grid(padx=5, row=1, column=1)
+        ttk.Entry(self, width=40, textvariable=self.clave2).grid(padx=5, row=2, column=1)
         
         
         ttk.Button(self, text="Cancelar", command=parent.destroy).grid(padx=5, row=6, column=1)
-        ttk.Button(self, text="OK", command=parent.destroy).grid(padx=5, row=6, column=0)
-        
-        def edit_password(self):
-            pass
+        ttk.Button(self, text="OK", command=lambda: self.edit_password()).grid(padx=5, row=6, column=0)
         
         
+        
+    #chequear
+    def edit_password(self):
+        if self.email.get() == "" or self.clave.get() == "" or self.clave2.get() == "":
+                tkinter.messagebox.showinfo("Error", "Debe completar todos los campos")
+        else:
+            if not check_user(self.email.get()):
+                tkinter.messagebox.showinfo("Error", "E-mail no existente en la base de datos, ingrese otro")    
+            else:
+                if self.clave.get() == self.clave2.get():
+                    con=create_connection('Supermark.db')
+                    with con:
+                        id=select_userid(con,(self.email.get(),))
+                        print(id)
+                        update_usuarios_clave(con,(self.clave.get(),id))
+                        #update_usuarios_atributo(con,"clave",(self.clave.get(),id))
+                        tkinter.messagebox.showinfo("Éxito", "Contraseña restablecida")
+                else:
+                    tkinter.messagebox.showinfo("Error", "Las contraseñas no coinciden")       
+     
+     
+
+                           
+                              
 
 root = tk.Tk()
 root.resizable(False, False)

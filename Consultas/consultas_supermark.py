@@ -30,6 +30,12 @@ def select_all_descuentos(conn):
 
     return rows
 
+def select_userid(conn,email):
+    cur = conn.cursor()
+    cur.execute("SELECT usuarioId FROM usuarios WHERE email= ?",email)
+    row = cur.fetchone()
+    return row
+
 
 def select_descuento_porcentaje(conn):
     """
@@ -72,6 +78,9 @@ def main():
 
         print("Mostrar descuentos")
         print(select_all_descuentos(conn))
+        
+        print("Mostrar id de usuario según email")
+        print(select_userid(conn,("chiqui@hotmail.com",)))
 
         
 if __name__ == '__main__':
