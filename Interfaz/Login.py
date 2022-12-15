@@ -228,7 +228,7 @@ class Administrador(ttk.Frame):
 
 
 # clase registro stock
-"""        
+'''      
 class Registro(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, padding=(20))
@@ -270,6 +270,7 @@ class Registro(ttk.Frame):
         
         ttk.Button(self, text="Confirmar", command=parent.destroy).grid()
         ttk.Button(self, text="Cancelar", command=parent.destroy).grid()
+'''
         
 class Recuperacion(ttk.Frame):
     def __init__(self, parent):
