@@ -5,6 +5,8 @@ import sqlite3
 from sqlite3 import Error
 import tkinter.messagebox
 from forms.form_usuario import UsuarioPanel
+from forms.form_admin import *
+
 
 def create_connection(db_file):
     """create a database connection to the SQLite database
@@ -177,9 +179,9 @@ class App(ttk.Frame):
         # como padre indicamos la ventana principal (no usamos grid)
         if self.validate_login():
             if validate_tipo_user(self.email.get()) == "admin":
-                toplevel = tk.Toplevel(self.parent)
-                Administrador(toplevel).grid()
-                #AdminPanel()
+                #toplevel = tk.Toplevel(self.parent)
+                #Administrador(toplevel).grid()
+                AdminPanel()
             else:
                 #toplevel = tk.Toplevel(self.parent)
                 #Cliente(toplevel).grid()
@@ -189,8 +191,7 @@ class App(ttk.Frame):
                 tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
             else:
                 tkinter.messagebox.showinfo("Error", "Usuario o Contraseña incorrecto",icon='error')
-            
-            
+                  
     def abrir_recuperacion(self):
         toplevel = tk.Toplevel(self.parent)
         Recuperacion(toplevel).grid()
@@ -236,6 +237,7 @@ class Registro(ttk.Frame):
         parent.rowconfigure(0, weight=1)
         parent.resizable(False, False)
         ttk.Button(self, text="Cancelar", command=parent.destroy).grid()
+ 
         
 class Recuperacion(ttk.Frame):
     def __init__(self, parent):
