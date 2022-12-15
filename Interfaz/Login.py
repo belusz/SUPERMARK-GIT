@@ -481,7 +481,7 @@ class Registro(ttk.Frame):
             image=self.button_image_1,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_1 clicked"),
+            command=parent.destroy,
             relief="flat",
         )
         self.button_1.place(x=687.0, y=686.0, width=283.0, height=55.68719482421875)
@@ -519,12 +519,13 @@ class Recuperacion(ttk.Frame):
         parent.title("Recuperacion de Contraseña")
         icono2 = PhotoImage(file="Interfaz/assets/frame1/recuperar.png")
         parent.iconphoto(False, icono2)
-        parent.geometry("350x100+180+100")
+        parent.geometry("1147x766")
         self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
-        parent.columnconfigure(0, weight=1)
+        parent.columnconfigure(1, weight=1)
         parent.rowconfigure(0, weight=1)
         parent.resizable(False, False)
         ttk.Button(self, text="Cancelar", command=parent.destroy).grid()
+        ttk.Button(self, text="OK", command=parent.destroy).grid()
 
 
 root = tk.Tk()
