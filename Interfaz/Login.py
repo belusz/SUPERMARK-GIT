@@ -1,13 +1,16 @@
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
+import tkinter.messagebox
+
 import sqlite3
 from sqlite3 import Error
-import tkinter.messagebox
-from forms.form_usuario import UsuarioPanel
 
 from forms.form_usuario import UsuarioPanel
+from forms.form_usuario import UsuarioPanel
 from forms.form_admin import *
+
+from ..SupermarkBDD.insert_bdd_supermarket import *
 
 
 
@@ -34,6 +37,7 @@ def validate_user(email, clave):
     rows = cur.fetchall()
     return True if len(rows) > 0 else False
 
+#verifico si el email ya existe en la bdd
 def check_user(email):
     database = r"Supermark.db"
     conn = create_connection(database)
@@ -50,16 +54,6 @@ def validate_tipo_user(email):
     rows = cur.fetchall()
     return rows[0][0]
 
-def add_user(self):
-        if check_user(self.email.get()):
-            tkinter.messagebox.showinfo("Error", "E-mail ya asociado a un cliente, ingrese otro")
-        else:
-            if self.email.get() == "" or self.clave.get() == "" or self.nombre.get() == "" or self.apellido.get() == "" or self.dni.get() == "" or self.domicilio.get() == "" or self.dni.get() == "" or self.fechanac.get() == "":
-                tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
-            else:
-                #completar codigo para agregar a la BDD
-                pass      
-        
 class App(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, padding=(20))
@@ -477,6 +471,21 @@ class Registro(ttk.Frame):
             fill="#FFFFFF",
             font=("Nokora Black", 32 * -1),
         )
+        
+        #metodo para agregar usuario a la bdd
+        def add_user(self):
+            if check_user(self.email.get()):
+                tkinter.messagebox.showinfo("Error", "E-mail ya asociado a un cliente, ingrese otro")
+            else:
+                if self.email.get() == "" or self.clave.get() == "" or self.nombre.get() == "" or self.apellido.get() == "" or self.dni.get() == "" or self.domicilio.get() == "" or self.dni.get() == "" or self.fechanac.get() == "":
+                    tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
+                else:
+                   if self.clave.get() != self.clavecheck():
+                        tkinter.messagebox.showinfo("Error", "Las contraseñas no coinciden")
+                   else:
+                    usuario=[self.nombre.get(),self.apellido.get(),self.email.get(),self.dni.get(),self.fechanac.get(),self.clave.get(),self.direccion.get(),self.tipo.get()]
+                    create_usuarios(usuario)
+        
 
         self.mainloop
 
@@ -486,18 +495,30 @@ class Registro(ttk.Frame):
 
 class Recuperacion(ttk.Frame):
     def __init__(self, parent):
+        
         super().__init__(parent, padding=(20))
         parent.title("Recuperacion de Contraseña")
         icono2 = PhotoImage(file="Interfaz/assets/frame1/recuperar.png")
         parent.iconphoto(False, icono2)
-        parent.geometry("1147x766")
+        parent.geometry("426x240")
+        
         self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
-        parent.columnconfigure(1, weight=1)
+        parent.columnconfigure(0, weight=1)
         parent.rowconfigure(0, weight=1)
-        parent.resizable(False, False)
-        ttk.Button(self, text="Cancelar", command=parent.destroy).grid()
-        ttk.Button(self, text="OK", command=parent.destroy).grid()
+        parent.resizable(False, False)  
+        
+        ttk.Label(self, text="Email:").grid(pady=5, row=0, column=0)
+        ttk.Label(self, text="Ingrese nueva contraseña:").grid( pady=5, row=1, column=0)
+        ttk.Label(self, text="Repetir nueva contraseña:").grid( pady=5, row=2, column=0)
 
+        ttk.Entry(self, width=40).grid(padx=5, row=0, column=1)
+        ttk.Entry(self, width=40).grid(padx=5, row=1, column=1)
+        ttk.Entry(self, width=40).grid(padx=5, row=2, column=1)
+        
+        
+        ttk.Button(self, text="Cancelar", command=parent.destroy).grid(padx=5, row=6, column=1)
+        ttk.Button(self, text="OK", command=parent.destroy).grid(padx=5, row=6, column=0)
+        
 
 root = tk.Tk()
 root.resizable(False, False)
