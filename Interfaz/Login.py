@@ -109,7 +109,7 @@ class App(ttk.Frame):
             714.0,
             48.0,
             anchor="nw",
-            text="Usuario",
+            text="Usuario (E-mail)",
             fill="#000000",
             font=("Nokora Bold", 20 * -1),
         )
@@ -487,7 +487,9 @@ class Registro(ttk.Frame):
                    if self.clave.get() == self.clavecheck.get():
                        #corregir este
                         usuario=[self.nombre.get(),self.apellido.get(),self.email.get(),self.dni.get(),self.fechanac.get(),self.clave.get(),self.direccion.get(),self.tipo.get()]
-                        create_usuarios(usuario)
+                        con=create_connection('Supermark.db')
+                        create_usuarios(con,usuario)
+                        tkinter.messagebox.showinfo("Éxito", "Registrado con éxito")
                    else:
                         tkinter.messagebox.showinfo("Error", "Las contraseñas no coinciden")
                     
@@ -524,6 +526,10 @@ class Recuperacion(ttk.Frame):
         
         ttk.Button(self, text="Cancelar", command=parent.destroy).grid(padx=5, row=6, column=1)
         ttk.Button(self, text="OK", command=parent.destroy).grid(padx=5, row=6, column=0)
+        
+        def edit_password(self):
+            pass
+        
         
 
 root = tk.Tk()
