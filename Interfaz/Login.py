@@ -10,7 +10,11 @@ from forms.form_usuario import UsuarioPanel
 from forms.form_usuario import UsuarioPanel
 from forms.form_admin import *
 
-from ..SupermarkBDD.insert_bdd_supermarket import *
+#no funciona
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).parent.parent))
+from SupermarkBDD.insert_bdd_supermarket import *
 
 
 
@@ -406,7 +410,7 @@ class Registro(ttk.Frame):
             288.5, 647.0, image=self.entry_image_8
         )
         self.entry_8 = Entry(
-            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, textvariable=self.tipo
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, textvariable=self.clave
         )
         self.entry_8.place(x=18.0, y=633.0, width=541.0, height=26.0)
 
@@ -477,14 +481,16 @@ class Registro(ttk.Frame):
             if check_user(self.email.get()):
                 tkinter.messagebox.showinfo("Error", "E-mail ya asociado a un cliente, ingrese otro")
             else:
-                if self.email.get() == "" or self.clave.get() == "" or self.nombre.get() == "" or self.apellido.get() == "" or self.dni.get() == "" or self.domicilio.get() == "" or self.dni.get() == "" or self.fechanac.get() == "":
-                    tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
+                if self.email.get() == "" or self.clave.get() == "" or self.nombre.get() == "" or self.apellido.get() == "" or self.dni.get() == "" or self.direccion.get() == "" or self.dni.get() == "" or self.fechanac.get() == "":
+                    tkinter.messagebox.showinfo("Error", "Debe completar todos los campos")
                 else:
-                   if self.clave.get() != self.clavecheck():
-                        tkinter.messagebox.showinfo("Error", "Las contraseñas no coinciden")
+                   if self.clave.get() == self.clavecheck.get():
+                       #corregir este
+                        usuario=[self.nombre.get(),self.apellido.get(),self.email.get(),self.dni.get(),self.fechanac.get(),self.clave.get(),self.direccion.get(),self.tipo.get()]
+                        create_usuarios(usuario)
                    else:
-                    usuario=[self.nombre.get(),self.apellido.get(),self.email.get(),self.dni.get(),self.fechanac.get(),self.clave.get(),self.direccion.get(),self.tipo.get()]
-                    create_usuarios(usuario)
+                        tkinter.messagebox.showinfo("Error", "Las contraseñas no coinciden")
+                    
         
 
         self.mainloop
