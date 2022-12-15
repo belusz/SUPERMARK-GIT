@@ -4,6 +4,8 @@ from tkinter import ttk
 import sqlite3
 from sqlite3 import Error
 import tkinter.messagebox
+from forms.form_usuario import UsuarioPanel
+
 
 def create_connection(db_file):
     """create a database connection to the SQLite database
@@ -17,7 +19,6 @@ def create_connection(db_file):
         return conn
     except Error as e:
         print(e)
-
     return conn
 
 
@@ -35,25 +36,22 @@ def validate_tipo_user(email):
     conn = create_connection(database)
     cur = conn.cursor()
     cur.execute("SELECT tipo FROM usuarios WHERE email = ?", (email,))
-
     rows = cur.fetchall()
-
     return rows[0][0]
 
 
 class App(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, padding=(20))
-        self.parent=parent
+        self.parent = parent
         parent.title("Bienvenido a Supermark")
         parent.geometry("1142x766")
-        icono=PhotoImage(file="Interfaz/assets/carro.png")
-        parent.iconphoto(False,icono)
+        icono = PhotoImage(file="Interfaz/assets/carro.png")
+        parent.iconphoto(False, icono)
         parent.resizable(False, False)
-        
+
         self.email = tk.StringVar()
         self.clave = tk.StringVar()
-
         self.canvas = Canvas(
             parent,
             bg="#FFFFFF",
@@ -63,14 +61,11 @@ class App(ttk.Frame):
             highlightthickness=0,
             relief="ridge",
         )
-
         self.canvas.place(x=0, y=0)
         self.image_image_1 = PhotoImage(file="Interfaz/assets/frame0/image_1.png")
         self.image_1 = self.canvas.create_image(572.0, 383.0, image=self.image_image_1)
-
         self.image_image_2 = PhotoImage(file="Interfaz/assets/frame0/image_2.png")
         self.image_2 = self.canvas.create_image(868.0, 384.0, image=self.image_image_2)
-
         self.canvas.create_text(
             190.0,
             170.0,
@@ -79,14 +74,18 @@ class App(ttk.Frame):
             fill="#FFFFFF",
             font=("Lato Regular", 32 * -1),
         )
-
         self.entry_image_1 = PhotoImage(file="Interfaz/assets/frame0/entry_1.png")
         self.entry_bg_1 = self.canvas.create_image(
             849.0, 102.0, image=self.entry_image_1
         )
-        self.entry_1 = Entry(bd=0, bg="#D9D9D9", fg="#000716", highlightthickness=0,textvariable=self.email)
+        self.entry_1 = Entry(
+            bd=0,
+            bg="#D9D9D9",
+            fg="#000716",
+            highlightthickness=0,
+            textvariable=self.email,
+        )
         self.entry_1.place(x=713.0, y=85.0, width=272.0, height=32.0)
-
         self.canvas.create_text(
             714.0,
             48.0,
@@ -95,13 +94,19 @@ class App(ttk.Frame):
             fill="#000000",
             font=("Nokora Bold", 20 * -1),
         )
-
         self.entry_image_2 = PhotoImage(file="Interfaz/assets/frame0/entry_2.png")
         self.entry_bg_2 = self.canvas.create_image(
             847.0, 184.0, image=self.entry_image_2
         )
-        self.entry_2 = Entry(bd=0, bg="#D9D9D9", fg="#000716", highlightthickness=0,textvariable=self.clave)
+        self.entry_2 = Entry(
+            bd=0,
+            bg="#D9D9D9",
+            fg="#000716",
+            highlightthickness=0,
+            textvariable=self.clave,
+        )
         self.entry_2.place(x=711.0, y=167.0, width=272.0, height=32.0)
+        self.entry_2.config(show="*")
 
         self.canvas.create_text(
             715.5568237304688,
@@ -121,7 +126,6 @@ class App(ttk.Frame):
             relief="flat",
         )
         self.button_1.place(x=898.0, y=242.0, width=178.0, height=54.0)
-
         self.canvas.create_text(
             635.0,
             254.0,
@@ -130,7 +134,6 @@ class App(ttk.Frame):
             fill="#000000",
             font=("Nokora Bold", 20 * -1),
         )
-
         self.button_image_2 = PhotoImage(file="Interfaz/assets/frame0/button_2.png")
         self.button_2 = Button(
             image=self.button_image_2,
@@ -140,7 +143,6 @@ class App(ttk.Frame):
             relief="flat",
         )
         self.button_2.place(x=705.0, y=334.0, width=283.0, height=55.687255859375)
-
         self.button_image_3 = PhotoImage(file="Interfaz/assets/frame0/button_3.png")
         self.button_3 = Button(
             image=self.button_image_3,
@@ -150,7 +152,6 @@ class App(ttk.Frame):
             relief="flat",
         )
         self.button_3.place(x=699.0, y=504.0, width=283.0, height=55.68719482421875)
-
         self.canvas.create_text(
             772.0,
             429.0,
@@ -159,10 +160,8 @@ class App(ttk.Frame):
             fill="#000000",
             font=("Nokora Bold", 20 * -1),
         )
-
         self.image_image_3 = PhotoImage(file="Interfaz/assets/frame0/image_3.png")
         self.image_3 = self.canvas.create_image(305.0, 394.0, image=self.image_image_3)
-
         self.canvas.create_rectangle(
             140.0, 298.0, 240.0, 398.0, fill="#000000", outline=""
         )
@@ -177,23 +176,33 @@ class App(ttk.Frame):
             if validate_tipo_user(self.email.get()) == "admin":
                 toplevel = tk.Toplevel(self.parent)
                 Administrador(toplevel).grid()
+                # AdminPanel()
             else:
                 toplevel = tk.Toplevel(self.parent)
                 Cliente(toplevel).grid()
+                # toplevel = tk.Toplevel(self.parent)
+                # Cliente(toplevel).grid()
+                UsuarioPanel()
         else:
-            if self.email.get() == '' or self.clave.get() == '':
+            if self.email.get() == "" or self.clave.get() == "":
                 tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
             else:
-                tkinter.messagebox.showinfo("Error", "Usuario o Contraseña incorrecto",icon='error')
-            
-            
+                tkinter.messagebox.showinfo(
+                    "Error", "Usuario o Contraseña incorrecto", icon="error"
+                )
+
     def abrir_recuperacion(self):
         toplevel = tk.Toplevel(self.parent)
         Recuperacion(toplevel).grid()
-        
+
     def abrir_registro(self):
         toplevel = tk.Toplevel(self.parent)
         Registro(toplevel).grid()
+
+    # def salir_app():
+    # if tkinter.messagebox.askquestion("Salir","¿Está seguro que desea salir de la aplicación?"):
+    #   print("Entré")
+    #  root.destroy
 
 
 class Cliente(ttk.Frame):
@@ -220,31 +229,298 @@ class Administrador(ttk.Frame):
         ttk.Button(self, text="Cerrar", command=parent.destroy).grid()
 
 
+# clase registro stock
+"""        
 class Registro(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, padding=(20))
         parent.title("Registrarse")
         icono3=PhotoImage(file="Interfaz/assets/frame1/registrar.png")
         parent.iconphoto(False,icono3)
+        parent.geometry("1142x766")
+        self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
+        parent.columnconfigure(0, weight=1)
+        parent.rowconfigure(0, weight=1)
+        parent.resizable(False, False)
+        
+        self.nombre = tk.StringVar()
+        self.apellido = tk.StringVar()
+        self.email = tk.StringVar()
+        self.dni = tk.StringVar()
+        self.fechanac= tk.StringVar()
+        self.clave = tk.StringVar()
+        self.direccion = tk.StringVar()
+        self.tipo = tk.StringVar()
+        
+        ttk.Label(self, text="Para registrarse por favor complete todos los campos").grid()
+        ttk.Label(self, text="Nombre: ").grid()
+        ttk.Entry(self, textvariable=self.nombre).grid()
+        ttk.Label(self, text="Apellido: ").grid()
+        ttk.Entry(self, textvariable=self.apellido).grid()
+        ttk.Label(self, text="E-mail: ").grid()
+        ttk.Entry(self, textvariable=self.email).grid()
+        ttk.Label(self, text="DNI (sólo números): ").grid()
+        ttk.Entry(self, textvariable=self.dni).grid()  
+        ttk.Label(self, text="Fecha de Nacimiento (dd-mm-aaaa): ").grid()
+        ttk.Entry(self, textvariable=self.fechanac).grid()
+        ttk.Label(self, text="Clave: ").grid()
+        ttk.Entry(self, textvariable=self.clave).grid()
+        ttk.Label(self, text="Dirección: ").grid()
+        ttk.Entry(self, textvariable=self.direccion).grid()
+        ttk.Label(self, text="Tipo de usuario (cliente/admin): ").grid()
+        ttk.Entry(self, textvariable=self.apellido).grid()  
+        
+        ttk.Button(self, text="Confirmar", command=parent.destroy).grid()
+        ttk.Button(self, text="Cancelar", command=parent.destroy).grid()
+"""
+# nueva clase registro
+
+
+class Registro(ttk.Frame):
+    def __init__(self, parent):
+        super().__init__(parent, padding=(20))
+        parent.title("Registrarse")
+        icono3 = PhotoImage(file="Interfaz/assets/frame1/registrar.png")
+        parent.iconphoto(False, icono3)
+        parent.geometry("1142x766")
+
+        self.nombre = tk.StringVar()
+        self.apellido = tk.StringVar()
+        self.email = tk.StringVar()
+        self.dni = tk.StringVar()
+        self.fechanac = tk.StringVar()
+        self.clave = tk.StringVar()
+        self.direccion = tk.StringVar()
+        self.tipo = tk.StringVar()
+
+        self.canvas_registro = Canvas(
+            parent,
+            bg="#FFFFFF",
+            height=766,
+            width=1142,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge",
+        )
+
+        self.canvas_registro.place(x=0, y=0)
+        self.image_image_1 = PhotoImage(file="Interfaz/assets/frame1/image_1.png")
+        self.image_1 = self.canvas_registro.create_image(
+            578.0, 383.0, image=self.image_image_1
+        )
+
+        self.entry_image_1 = PhotoImage(file="Interfaz/assets/frame1/entry_1.png")
+        self.entry_bg_1 = self.canvas_registro.create_image(
+            289.5, 154.0, image=self.entry_image_1
+        )
+        self.entry_1 = Entry(
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+        )
+        self.entry_1.place(x=19.0, y=140.0, width=541.0, height=26.0)
+
+        self.canvas_registro.create_text(
+            15.0,
+            111.0,
+            anchor="nw",
+            text="Nombre\n",
+            fill="#000000",
+            font=("Nokora Bold", 20 * -1),
+        )
+
+        self.entry_image_2 = PhotoImage(file="Interfaz/assets/frame1/entry_2.png")
+        self.entry_bg_2 = self.canvas_registro.create_image(
+            288.5, 226.0, image=self.entry_image_2
+        )
+        self.entry_2 = Entry(
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+        )
+        self.entry_2.place(x=18.0, y=212.0, width=541.0, height=26.0)
+
+        self.canvas_registro.create_text(
+            18.0,
+            178.0,
+            anchor="nw",
+            text="Apellido",
+            fill="#000000",
+            font=("Nokora Bold", 20 * -1),
+        )
+
+        self.entry_image_3 = PhotoImage(file="Interfaz/assets/frame1/entry_3.png")
+        self.entry_bg_3 = self.canvas_registro.create_image(
+            288.5, 291.0, image=self.entry_image_3
+        )
+        self.entry_3 = Entry(
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+        )
+        self.entry_3.place(x=18.0, y=277.0, width=541.0, height=26.0)
+
+        self.canvas_registro.create_text(
+            17.0,
+            248.0,
+            anchor="nw",
+            text="E-mail",
+            fill="#000000",
+            font=("Nokora Bold", 20 * -1),
+        )
+
+        self.entry_image_4 = PhotoImage(file="Interfaz/assets/frame1/entry_4.png")
+        self.entry_bg_4 = self.canvas_registro.create_image(
+            290.5, 363.0, image=self.entry_image_4
+        )
+        self.entry_4 = Entry(
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+        )
+        self.entry_4.place(x=20.0, y=349.0, width=541.0, height=26.0)
+
+        self.canvas_registro.create_text(
+            19.0,
+            317.0,
+            anchor="nw",
+            text="DNI (Sólo números)",
+            fill="#000000",
+            font=("Nokora Bold", 20 * -1),
+        )
+
+        self.entry_image_5 = PhotoImage(file="Interfaz/assets/frame1/entry_5.png")
+        self.entry_bg_5 = self.canvas_registro.create_image(
+            290.5, 438.0, image=self.entry_image_5
+        )
+        self.entry_5 = Entry(
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+        )
+        self.entry_5.place(x=20.0, y=424.0, width=541.0, height=26.0)
+
+        self.canvas_registro.create_text(
+            17.0,
+            391.0,
+            anchor="nw",
+            text="Fecha de Nacimiento (dd-mm-aa)\n",
+            fill="#000000",
+            font=("Nokora Bold", 20 * -1),
+        )
+
+        self.entry_image_6 = PhotoImage(file="Interfaz/assets/frame1/entry_6.png")
+        self.entry_bg_6 = self.canvas_registro.create_image(
+            291.5, 510.0, image=self.entry_image_6
+        )
+        self.entry_6 = Entry(
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+        )
+        self.entry_6.place(x=21.0, y=496.0, width=541.0, height=26.0)
+
+        self.canvas_registro.create_text(
+            18.0,
+            467.0,
+            anchor="nw",
+            text="Dirección",
+            fill="#000000",
+            font=("Nokora Bold", 20 * -1),
+        )
+
+        self.entry_image_7 = PhotoImage(file="Interfaz/assets/frame1/entry_7.png")
+        self.entry_bg_7 = self.canvas_registro.create_image(
+            290.5, 575.0, image=self.entry_image_7
+        )
+        self.entry_7 = Entry(
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+        )
+        self.entry_7.place(x=20.0, y=561.0, width=541.0, height=26.0)
+
+        self.canvas_registro.create_text(
+            16.0,
+            536.0,
+            anchor="nw",
+            text="Tipo de usuario (admin / cliente)",
+            fill="#000000",
+            font=("Nokora Bold", 20 * -1),
+        )
+
+        self.entry_image_8 = PhotoImage(file="Interfaz/assets/frame1/entry_8.png")
+        self.entry_bg_8 = self.canvas_registro.create_image(
+            288.5, 647.0, image=self.entry_image_8
+        )
+        self.entry_8 = Entry(
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+        )
+        self.entry_8.place(x=18.0, y=633.0, width=541.0, height=26.0)
+
+        self.canvas_registro.create_text(
+            13.0,
+            604.0,
+            anchor="nw",
+            text="Clave",
+            fill="#000000",
+            font=("Nokora Bold", 20 * -1),
+        )
+
+        self.entry_image_9 = PhotoImage(file="Interfaz/assets/frame1/entry_9.png")
+        self.entry_bg_9 = self.canvas_registro.create_image(
+            853.5, 647.0, image=self.entry_image_9
+        )
+        self.entry_9 = Entry(
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+        )
+        self.entry_9.place(x=583.0, y=633.0, width=541.0, height=26.0)
+
+        self.canvas_registro.create_text(
+            580.0,
+            604.0,
+            anchor="nw",
+            text="Repetir Clave",
+            fill="#000000",
+            font=("Nokora Bold", 20 * -1),
+        )
+
+        self.button_image_1 = PhotoImage(file="Interfaz/assets/frame1/button_1.png")
+        self.button_1 = Button(
+            self.canvas_registro,
+            image=self.button_image_1,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_1 clicked"),
+            relief="flat",
+        )
+        self.button_1.place(x=687.0, y=686.0, width=283.0, height=55.68719482421875)
+
+        self.button_image_2 = PhotoImage(file="Interfaz/assets/frame1/button_2.png")
+        self.button_2 = Button(
+            self.canvas_registro,
+            image=self.button_image_2,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_2 clicked"),
+            relief="flat",
+        )
+        self.button_2.place(x=179.0, y=686.0, width=283.0, height=55.68719482421875)
+
+        self.canvas_registro.create_rectangle(
+            0.0, 20.0, 932.0, 86.0, fill="#AF0A08", outline=""
+        )
+
+        self.canvas_registro.create_text(
+            15.0,
+            35.0,
+            anchor="nw",
+            text="Por favor complete todos los campos para registrarse:",
+            fill="#FFFFFF",
+            font=("Nokora Black", 32 * -1),
+        )
+
+        self.mainloop
+
+
+class Recuperacion(ttk.Frame):
+    def __init__(self, parent):
+        super().__init__(parent, padding=(20))
+        parent.title("Recuperacion de Contraseña")
+        icono2 = PhotoImage(file="Interfaz/assets/frame1/recuperar.png")
+        parent.iconphoto(False, icono2)
         parent.geometry("350x100+180+100")
         self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
         parent.columnconfigure(0, weight=1)
         parent.rowconfigure(0, weight=1)
         parent.resizable(False, False)
         ttk.Button(self, text="Cancelar", command=parent.destroy).grid()
-        
-class Recuperacion(ttk.Frame):
-    def __init__(self, parent):
-        super().__init__(parent, padding=(20))
-        parent.title("Recuperacion de Contraseña")
-        icono2=PhotoImage(file="Interfaz/assets/frame1/recuperar.png")
-        parent.iconphoto(False,icono2)
-        parent.geometry("350x100+180+100")
-        self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
-        parent.columnconfigure(0, weight=1)
-        parent.rowconfigure(0, weight=1)
-        parent.resizable(False, False)
-        ttk.Button(self, text="Cancelar", command=parent.destroy).grid()        
 
 
 root = tk.Tk()
