@@ -34,6 +34,13 @@ def validate_user(email, clave):
     rows = cur.fetchall()
     return True if len(rows) > 0 else False
 
+def check_user(email):
+    database = r"Supermark.db"
+    conn = create_connection(database)
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM usuarios WHERE email = ?", (email,))
+    rows = cur.fetchall()
+    return True if len(rows) > 0 else False
 
 def validate_tipo_user(email):
     database = r"Supermark.db"
@@ -43,7 +50,16 @@ def validate_tipo_user(email):
     rows = cur.fetchall()
     return rows[0][0]
 
-
+def add_user(self):
+        if check_user(self.email.get()):
+            tkinter.messagebox.showinfo("Error", "E-mail ya asociado a un cliente, ingrese otro")
+        else:
+            if self.email.get() == "" or self.clave.get() == "" or self.nombre.get() == "" or self.apellido.get() == "" or self.dni.get() == "" or self.domicilio.get() == "" or self.dni.get() == "" or self.fechanac.get() == "":
+                tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
+            else:
+                #completar codigo para agregar a la BDD
+                pass      
+        
 class App(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, padding=(20))
@@ -56,6 +72,7 @@ class App(ttk.Frame):
 
         self.email = tk.StringVar()
         self.clave = tk.StringVar()
+        
         self.canvas = Canvas(
             parent,
             bg="#FFFFFF",
@@ -203,12 +220,7 @@ class App(ttk.Frame):
         toplevel = tk.Toplevel(self.parent)
         Registro(toplevel).grid()
 
-    # def salir_app():
-    # if tkinter.messagebox.askquestion("Salir","¿Está seguro que desea salir de la aplicación?"):
-    #   print("Entré")
-    #  root.destroy
-
-
+   
 class Cliente(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, padding=(20))
@@ -233,52 +245,7 @@ class Administrador(ttk.Frame):
         ttk.Button(self, text="Cerrar", command=parent.destroy).grid()
 
 
-# clase registro stock
-"""        
-class Registro(ttk.Frame):
-    def __init__(self, parent):
-        super().__init__(parent, padding=(20))
-        parent.title("Registrarse")
-        icono3=PhotoImage(file="Interfaz/assets/frame1/registrar.png")
-        parent.iconphoto(False,icono3)
-        parent.geometry("1142x766")
-        self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
-        parent.columnconfigure(0, weight=1)
-        parent.rowconfigure(0, weight=1)
-        parent.resizable(False, False)
-        
-        self.nombre = tk.StringVar()
-        self.apellido = tk.StringVar()
-        self.email = tk.StringVar()
-        self.dni = tk.StringVar()
-        self.fechanac= tk.StringVar()
-        self.clave = tk.StringVar()
-        self.direccion = tk.StringVar()
-        self.tipo = tk.StringVar()
-        
-        ttk.Label(self, text="Para registrarse por favor complete todos los campos").grid()
-        ttk.Label(self, text="Nombre: ").grid()
-        ttk.Entry(self, textvariable=self.nombre).grid()
-        ttk.Label(self, text="Apellido: ").grid()
-        ttk.Entry(self, textvariable=self.apellido).grid()
-        ttk.Label(self, text="E-mail: ").grid()
-        ttk.Entry(self, textvariable=self.email).grid()
-        ttk.Label(self, text="DNI (sólo números): ").grid()
-        ttk.Entry(self, textvariable=self.dni).grid()  
-        ttk.Label(self, text="Fecha de Nacimiento (dd-mm-aaaa): ").grid()
-        ttk.Entry(self, textvariable=self.fechanac).grid()
-        ttk.Label(self, text="Clave: ").grid()
-        ttk.Entry(self, textvariable=self.clave).grid()
-        ttk.Label(self, text="Dirección: ").grid()
-        ttk.Entry(self, textvariable=self.direccion).grid()
-        ttk.Label(self, text="Tipo de usuario (cliente/admin): ").grid()
-        ttk.Entry(self, textvariable=self.apellido).grid()  
-        
-        ttk.Button(self, text="Confirmar", command=parent.destroy).grid()
-        ttk.Button(self, text="Cancelar", command=parent.destroy).grid()
-"""
-# nueva clase registro
-
+# Nueva interfaz registro
 
 class Registro(ttk.Frame):
     def __init__(self, parent):
@@ -294,6 +261,7 @@ class Registro(ttk.Frame):
         self.dni = tk.StringVar()
         self.fechanac = tk.StringVar()
         self.clave = tk.StringVar()
+        self.clavecheck= tk.StringVar()
         self.direccion = tk.StringVar()
         self.tipo = tk.StringVar()
 
@@ -318,7 +286,7 @@ class Registro(ttk.Frame):
             289.5, 154.0, image=self.entry_image_1
         )
         self.entry_1 = Entry(
-            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0 , textvariable=self.nombre
         )
         self.entry_1.place(x=19.0, y=140.0, width=541.0, height=26.0)
 
@@ -336,7 +304,7 @@ class Registro(ttk.Frame):
             288.5, 226.0, image=self.entry_image_2
         )
         self.entry_2 = Entry(
-            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0 , textvariable=self.apellido
         )
         self.entry_2.place(x=18.0, y=212.0, width=541.0, height=26.0)
 
@@ -354,7 +322,7 @@ class Registro(ttk.Frame):
             288.5, 291.0, image=self.entry_image_3
         )
         self.entry_3 = Entry(
-            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, textvariable=self.email
         )
         self.entry_3.place(x=18.0, y=277.0, width=541.0, height=26.0)
 
@@ -372,7 +340,7 @@ class Registro(ttk.Frame):
             290.5, 363.0, image=self.entry_image_4
         )
         self.entry_4 = Entry(
-            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, textvariable=self.dni
         )
         self.entry_4.place(x=20.0, y=349.0, width=541.0, height=26.0)
 
@@ -390,7 +358,7 @@ class Registro(ttk.Frame):
             290.5, 438.0, image=self.entry_image_5
         )
         self.entry_5 = Entry(
-            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, textvariable=self.fechanac
         )
         self.entry_5.place(x=20.0, y=424.0, width=541.0, height=26.0)
 
@@ -408,7 +376,7 @@ class Registro(ttk.Frame):
             291.5, 510.0, image=self.entry_image_6
         )
         self.entry_6 = Entry(
-            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, textvariable=self.direccion
         )
         self.entry_6.place(x=21.0, y=496.0, width=541.0, height=26.0)
 
@@ -426,7 +394,7 @@ class Registro(ttk.Frame):
             290.5, 575.0, image=self.entry_image_7
         )
         self.entry_7 = Entry(
-            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, textvariable=self.tipo
         )
         self.entry_7.place(x=20.0, y=561.0, width=541.0, height=26.0)
 
@@ -444,7 +412,7 @@ class Registro(ttk.Frame):
             288.5, 647.0, image=self.entry_image_8
         )
         self.entry_8 = Entry(
-            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, textvariable=self.tipo
         )
         self.entry_8.place(x=18.0, y=633.0, width=541.0, height=26.0)
 
@@ -462,7 +430,7 @@ class Registro(ttk.Frame):
             853.5, 647.0, image=self.entry_image_9
         )
         self.entry_9 = Entry(
-            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0
+            self.canvas_registro, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, textvariable=self.clavecheck
         )
         self.entry_9.place(x=583.0, y=633.0, width=541.0, height=26.0)
 
@@ -492,7 +460,7 @@ class Registro(ttk.Frame):
             image=self.button_image_2,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_2 clicked"),
+            command=lambda: add_user(self),
             relief="flat",
         )
         self.button_2.place(x=179.0, y=686.0, width=283.0, height=55.68719482421875)
@@ -512,6 +480,9 @@ class Registro(ttk.Frame):
 
         self.mainloop
 
+
+    
+        
 
 class Recuperacion(ttk.Frame):
     def __init__(self, parent):
