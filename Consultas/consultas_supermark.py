@@ -81,6 +81,7 @@ def main():
         
         print("Mostrar id de usuario según email")
         print(select_userid(conn,("chiqui@hotmail.com",)))
+        print(select_userid(conn,"chiqui@hotmail.com"))
 
         
 if __name__ == '__main__':

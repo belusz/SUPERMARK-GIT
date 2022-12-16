@@ -544,12 +544,13 @@ class Recuperacion(ttk.Frame):
             else:
                 if self.clave.get() == self.clave2.get():
                     con=create_connection('Supermark.db')
-                    with con:
-                        id=select_userid(con,(self.email.get(),))
-                        print(id)
-                        update_usuarios_clave(con,(self.clave.get(),id))
-                        #update_usuarios_atributo(con,"clave",(self.clave.get(),id))
-                        tkinter.messagebox.showinfo("Éxito", "Contraseña restablecida")
+                    id_tupla=select_userid(con,(self.email.get(),))
+                    id_num=id_tupla[0]
+                    #print(id_num)
+                    #print(type(id_num))
+                    update_usuarios_clave(con,(self.clave.get(),id_num))
+                    #update_usuarios_atributo(con,"clave",(self.clave.get(),id))
+                    tkinter.messagebox.showinfo("Éxito", "Contraseña restablecida")
                 else:
                     tkinter.messagebox.showinfo("Error", "Las contraseñas no coinciden")       
      
