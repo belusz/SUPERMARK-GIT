@@ -10,7 +10,6 @@ from forms.form_usuario import UsuarioPanel
 from forms.form_usuario import UsuarioPanel
 from forms.form_admin import *
 
-#no funciona
 from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
