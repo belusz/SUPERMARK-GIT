@@ -219,16 +219,99 @@ class App(ttk.Frame):
         Registro(toplevel).grid()
 
    
+#class Cliente(ttk.Frame):
+#    def __init__(self, parent):
+#        super().__init__(parent, padding=(20))
+#        parent.title("Ventana Cliente")
+#        parent.geometry("350x100+180+100")
+#        self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
+#        parent.columnconfigure(0, weight=1)
+#        parent.rowconfigure(0, weight=1)
+#        parent.resizable(False, False)
+#        ttk.Button(self, text="Cerrar", command=parent.destroy).grid()
+
 class Cliente(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, padding=(20))
         parent.title("Ventana Cliente")
-        parent.geometry("350x100+180+100")
+        parent.geometry('1536x864')
         self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
         parent.columnconfigure(0, weight=1)
         parent.rowconfigure(0, weight=1)
         parent.resizable(False, False)
-        ttk.Button(self, text="Cerrar", command=parent.destroy).grid()
+        #ttk.Button(self, text="Cerrar", command=parent.destroy).grid()
+        # Etiqueta y Spinbox
+        etiqueta_temp = ttk.Label(self,text="Cantidad:")
+        etiqueta_temp.place(x=5, y=260, width=60)
+        spin_temp = ttk.Spinbox(self, from_=1, to=30, increment=1)
+        spin_temp.set("1")    
+        spin_temp.place(x=68, y=260, width=70)
+        # Boton Agregar
+        ttk.Button(self, text="Agregar", command=lambda:self.AddCarrito()).place(x=160, y=258, width=100)
+
+        # definimos las columnas
+        columns = ('codigo', 'nombre', 'precio', 'stock', 'tipoId', 'marca')
+        self.tree = ttk.Treeview(self, columns=columns, show='headings')
+        self.tree.grid(row=1, column=1, sticky=(tk.N, tk.S, tk.E, tk.W))
+
+        # definimos los encabezados
+        self.tree.heading('codigo', text='Codigo')
+        self.tree.heading('nombre', text='Nombre')
+        self.tree.heading('precio', text='Precio')
+        self.tree.heading('stock', text='Stock')
+        self.tree.heading('tipoId', text='TipoId')
+        self.tree.heading('marca', text='Marca')
+
+        con=create_connection('Supermark.db')
+        productos=select_all_productos(con)
+        
+        # agregar datos al treeview
+        for contact in productos:
+            self.tree.insert('', tk.END, values=contact)
+
+        # para ejecutar un callback cuando se haga click en un item
+        self.tree.bind('<<TreeviewSelect>>', self.item_seleccionado())
+
+        # agregar barra de scroll
+        scrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
+        self.tree.configure(yscroll=scrollbar.set)
+        scrollbar.grid(row=1, column=2, sticky=(tk.N, tk.S))
+
+
+        # 2 tabla - definimos las columnas
+        columns2 = ('codigo', 'nombre', 'precio', 'stock', 'tipoId', 'marca')
+        self.tree2 = ttk.Treeview(self, columns=columns2, show='headings')
+        self.tree2.place(x=1, y=350, width=1200)
+
+        # definimos los encabezados
+        self.tree2.heading('codigo', text='Codigo')
+        self.tree2.heading('nombre', text='Nombre')
+        self.tree2.heading('precio', text='Precio')
+        self.tree2.heading('stock', text='Stock')
+        self.tree2.heading('tipoId', text='TipoId')
+        self.tree2.heading('marca', text='Marca')
+
+        
+        # para ejecutar un callback cuando se haga click en un item
+        self.tree2.bind('<<TreeviewSelect>>', self.item_seleccionado())
+
+        # agregar barra de scroll
+        scrollbar2 = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree2.yview)
+        self.tree2.configure(yscroll=scrollbar2.set)
+        scrollbar2.grid(row=1, column=2, sticky=(tk.N, tk.S))
+        scrollbar2.place(x=1201, y=350, width=20, height= 230 )
+
+    def AddCarrito(self):
+        carritos = []
+        carritos.append(self.item_seleccionado())
+        print(self.item_seleccionado())
+        self.tree2.insert('', tk.END, values=carritos)
+        
+    def item_seleccionado(self):
+        item = self.tree.item(self.tree.selection())['text']
+        item2 = self.tree.item(self.tree.selection())['values']
+        print(item)
+        print(item2)
 
 
 class Administrador(ttk.Frame):
