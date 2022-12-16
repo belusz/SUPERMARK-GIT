@@ -67,6 +67,19 @@ def update_descuento(conn, descuento):
     conn.commit()
     print("Valor actualizado correctamente")
 
+def select_all_productos(conn):
+    """
+    Query all rows in the tasks table
+    :param conn: the Connection object
+    :return:
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT codigo, nombre, precio, stock, tipoId, marca FROM productos WHERE stock > 0")
+
+    rows = cur.fetchall()
+    # print(rows)
+
+    return rows
 
 def main():
     database = r"Supermark.db"
