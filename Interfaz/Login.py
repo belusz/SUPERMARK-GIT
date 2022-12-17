@@ -18,6 +18,7 @@ from SupermarkBDD.insert_bdd_supermarket import *
 from Consultas.update_supermark import *
 from Consultas.consultas_supermark import *
 
+usrId = 1
 
 def create_connection(db_file):
     """create a database connection to the SQLite database
@@ -40,6 +41,8 @@ def validate_user(email, clave):
     cur = conn.cursor()
     cur.execute("SELECT * FROM usuarios WHERE email = ? AND clave = ?", (email, clave))
     rows = cur.fetchall()
+    global usrId
+    usrId = rows[0][0]
     return True if len(rows) > 0 else False
 
 #verifico si el email ya existe en la bdd
@@ -230,6 +233,7 @@ class App(ttk.Frame):
 class Cliente(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, padding=(20))
+        self.parent = parent
         parent.title("Ventana Cliente")
         parent.geometry('1536x864')
         self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
@@ -245,12 +249,14 @@ class Cliente(ttk.Frame):
         self.spin_temp.place(x=68, y=260, width=70)
         # Boton Agregar
         ttk.Button(self, text="Agregar", command=lambda:self.AddCarrito()).place(x=160, y=258, width=100)
+        ttk.Button(self, text="Quitar", command=lambda:self.DelCarrito()).place(x=290, y=258, width=100)
+        ttk.Button(self, text="FINALIZAR COMPRA", command=lambda:self.FinCompra()).place(x=200, y=598, width=250, height=30)
         
         #spin_temp.bind("<<Increment>>", temp_incrementada)
         #spin_temp.bind("<<Decrement>>", temp_disminuida)
 
         # definimos las columnas
-        columns = ('codigo', 'nombre', 'precio', 'stock', 'tipoId', 'marca')
+        columns = ('codigo', 'nombre', 'precio', 'stock', 'tipo', 'marca')
         self.tree = ttk.Treeview(self, columns=columns, show='headings')
         self.tree.grid(row=1, column=1, sticky=(tk.N, tk.S, tk.E, tk.W))
 
@@ -259,7 +265,7 @@ class Cliente(ttk.Frame):
         self.tree.heading('nombre', text='Nombre')
         self.tree.heading('precio', text='Precio')
         self.tree.heading('stock', text='Stock')
-        self.tree.heading('tipoId', text='TipoId')
+        self.tree.heading('tipo', text='Tipo')
         self.tree.heading('marca', text='Marca')
 
         con=create_connection('Supermark.db')
@@ -278,7 +284,7 @@ class Cliente(ttk.Frame):
         scrollbar.grid(row=1, column=2, sticky=(tk.N, tk.S))
 
         # 2 tabla - definimos las columnas
-        columns2 = ('codigo', 'nombre', 'precio', 'stock', 'tipoId', 'marca')
+        columns2 = ('codigo', 'nombre', 'precio', 'cantidad', 'tipo', 'marca')
         self.tree2 = ttk.Treeview(self, columns=columns2, show='headings')
         self.tree2.place(x=1, y=350, width=1200)
 
@@ -286,8 +292,8 @@ class Cliente(ttk.Frame):
         self.tree2.heading('codigo', text='Codigo')
         self.tree2.heading('nombre', text='Nombre')
         self.tree2.heading('precio', text='Precio')
-        self.tree2.heading('stock', text='Stock')
-        self.tree2.heading('tipoId', text='TipoId')
+        self.tree2.heading('cantidad', text='Cantidad')
+        self.tree2.heading('tipo', text='Tipo')
         self.tree2.heading('marca', text='Marca')
         
         # para ejecutar un callback cuando se haga click en un item
@@ -303,7 +309,7 @@ class Cliente(ttk.Frame):
         etiqueta_total.place(x=5, y=600, width=60)
 
         self.total = ttk.Entry(self, justify=tk.RIGHT) #state="readonly",state=tk.DISABLED
-        self.total.place(x=60, y=600, width=100) #, height= 230 )
+        self.total.place(x=60, y=600, width=100)
         self.totalxprod = 0
         self.total.insert(0,self.totalxprod)
 
@@ -318,20 +324,42 @@ class Cliente(ttk.Frame):
         self.tree2.insert('', tk.END, values=carritos)
         self.spin_temp.set("1")
         self.totalxprod = self.totalxprod + (float(carritos[3]) * float(carritos[2]))
-        print(self.totalxprod)
         self.total.delete(0, tk.END)
         self.total.insert(0,self.totalxprod)
         
-        #print(self.spin_temp)
-        #print(ttk.Spinbox)
-        #self.tree2.insert('', tk.END, values=self.tree.item(self.tree.selection())['values'][0],)
-        #self.tree2.insert('', tk.END, values=self.tree.item(self.tree.selection())['values'][1],)
+    def DelCarrito(self):
+        a=(self.tree2.item(self.tree2.selection())['values'][2],)
+        b=(self.tree2.item(self.tree2.selection())['values'][3],)
+        self.totalxprod = self.totalxprod - (float(a[0])*float(b[0]))
+        self.tree2.delete(self.tree2.selection())
+        self.total.delete(0, tk.END)
+        self.total.insert(0,self.totalxprod)
         
     def item_seleccionado(self):
         item = self.tree.item(self.tree.selection())['text']
         item2 = self.tree.item(self.tree.selection())['values']
         print(item)
         print(item2)
+
+    def FinCompra(self):
+        con=create_connection('Supermark.db')
+        tarjetas=select_all_tarjetas(con,(usrId,))
+        if len(tarjetas) == 0:
+            toplevel = tk.Toplevel(self.parent)
+            Tarjeta(toplevel).grid()
+        else:
+            messagebox.showinfo("Sistema Supermark","La compra se realizo correctamente. En las porximas 48 hs recibirá sus productos.")
+   
+
+        #cur = con.cursor()
+        #cur.execute("SELECT usuarioId FROM usuarios WHERE email = ?", (self.email))
+        #rows = cur.fetchall()
+
+
+
+        #check_tarjeta(con,self)
+        #create_usuarios(con,usuario)
+        #tkinter.messagebox.showinfo("Éxito", "Registrado con éxito")
 
 
 class Administrador(ttk.Frame):
@@ -658,6 +686,41 @@ class Recuperacion(ttk.Frame):
      
      
 
+class Tarjeta(ttk.Frame):
+    def __init__(self, parent):
+        
+        super().__init__(parent, padding=(20))
+        parent.title("Agregar Tarjeta")
+        icono2 = PhotoImage(file="Interfaz/assets/frame1/recuperar.png")
+        parent.iconphoto(False, icono2)
+        parent.geometry("426x240")
+        
+        self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
+        parent.columnconfigure(0, weight=1)
+        parent.rowconfigure(0, weight=1)
+        parent.resizable(False, False)  
+        
+        self.numero = tk.StringVar()
+        self.banco = tk.StringVar()
+        self.titular = tk.StringVar()
+        self.fechaCaducidad = tk.StringVar()
+        
+        
+        ttk.Label(self, text="Numero:").grid(pady=5, row=0, column=0)
+        ttk.Label(self, text="Banco:").grid( pady=5, row=1, column=0)
+        ttk.Label(self, text="Titular:").grid( pady=5, row=2, column=0)
+        ttk.Label(self, text="Fecha de Caducidad:").grid( pady=5, row=3, column=0)
+
+        ttk.Entry(self, width=40, textvariable=self.numero).grid(padx=5, row=0, column=1)
+        ttk.Entry(self, width=40, textvariable=self.banco).grid(padx=5, row=1, column=1)
+        ttk.Entry(self, width=40, textvariable=self.titular).grid(padx=5, row=2, column=1)
+        ttk.Entry(self, width=40, textvariable=self.fechaCaducidad).grid(padx=5, row=3, column=1)
+        
+        
+        ttk.Button(self, text="Cancelar", command=parent.destroy).grid(padx=5, row=6, column=1)
+        ttk.Button(self, text="Finalizar", command=lambda: self.add_tarjeta()).grid(padx=5, row=6, column=0)
+        
+       
                            
                               
 
