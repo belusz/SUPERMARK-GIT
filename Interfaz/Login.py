@@ -6,10 +6,11 @@ import tkinter.messagebox
 import sqlite3
 from sqlite3 import Error
 
-#from forms.form_usuario import UsuarioPanel
-#from forms.form_usuario import UsuarioPanel
-#from forms.form_admin import *
+from forms.form_usuario import UsuarioPanel
+from forms.form_admin import AdminPanel
+from forms.form_admin import *
 
+#no funciona
 from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
@@ -195,13 +196,9 @@ class App(ttk.Frame):
             if validate_tipo_user(self.email.get()) == "admin":
                 toplevel = tk.Toplevel(self.parent)
                 Administrador(toplevel).grid()
-                # AdminPanel()
             else:
                 toplevel = tk.Toplevel(self.parent)
                 Cliente(toplevel).grid()
-                # toplevel = tk.Toplevel(self.parent)
-                # Cliente(toplevel).grid()
-                UsuarioPanel()
         else:
             if self.email.get() == "" or self.clave.get() == "":
                 tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
@@ -223,7 +220,7 @@ class App(ttk.Frame):
 #    def __init__(self, parent):
 #        super().__init__(parent, padding=(20))
 #        parent.title("Ventana Cliente")
-#        parent.geometry("350x100+180+100")
+#        parent.geometry('1080x720')
 #        self.grid(sticky=(tk.N, tk.S, tk.E, tk.W))
 #        parent.columnconfigure(0, weight=1)
 #        parent.rowconfigure(0, weight=1)
@@ -243,11 +240,14 @@ class Cliente(ttk.Frame):
         # Etiqueta y Spinbox
         etiqueta_temp = ttk.Label(self,text="Cantidad:")
         etiqueta_temp.place(x=5, y=260, width=60)
-        spin_temp = ttk.Spinbox(self, from_=1, to=30, increment=1)
-        spin_temp.set("1")    
-        spin_temp.place(x=68, y=260, width=70)
+        self.spin_temp = ttk.Spinbox(self, from_=1, to=30, increment=1)
+        self.spin_temp.set("1")    
+        self.spin_temp.place(x=68, y=260, width=70)
         # Boton Agregar
         ttk.Button(self, text="Agregar", command=lambda:self.AddCarrito()).place(x=160, y=258, width=100)
+        
+        #spin_temp.bind("<<Increment>>", temp_incrementada)
+        #spin_temp.bind("<<Decrement>>", temp_disminuida)
 
         # definimos las columnas
         columns = ('codigo', 'nombre', 'precio', 'stock', 'tipoId', 'marca')
@@ -277,7 +277,6 @@ class Cliente(ttk.Frame):
         self.tree.configure(yscroll=scrollbar.set)
         scrollbar.grid(row=1, column=2, sticky=(tk.N, tk.S))
 
-
         # 2 tabla - definimos las columnas
         columns2 = ('codigo', 'nombre', 'precio', 'stock', 'tipoId', 'marca')
         self.tree2 = ttk.Treeview(self, columns=columns2, show='headings')
@@ -290,7 +289,6 @@ class Cliente(ttk.Frame):
         self.tree2.heading('stock', text='Stock')
         self.tree2.heading('tipoId', text='TipoId')
         self.tree2.heading('marca', text='Marca')
-
         
         # para ejecutar un callback cuando se haga click en un item
         self.tree2.bind('<<TreeviewSelect>>', self.item_seleccionado())
@@ -300,12 +298,34 @@ class Cliente(ttk.Frame):
         self.tree2.configure(yscroll=scrollbar2.set)
         scrollbar2.grid(row=1, column=2, sticky=(tk.N, tk.S))
         scrollbar2.place(x=1201, y=350, width=20, height= 230 )
+       
+        etiqueta_total = ttk.Label(self,text="Total:")
+        etiqueta_total.place(x=5, y=600, width=60)
+
+        self.total = ttk.Entry(self, justify=tk.RIGHT) #state="readonly",state=tk.DISABLED
+        self.total.place(x=60, y=600, width=100) #, height= 230 )
+        self.totalxprod = 0
+        self.total.insert(0,self.totalxprod)
 
     def AddCarrito(self):
         carritos = []
-        carritos.append(self.item_seleccionado())
-        print(self.item_seleccionado())
+        carritos.append(self.tree.item(self.tree.selection())['values'][0],)
+        carritos.append(self.tree.item(self.tree.selection())['values'][1],)
+        carritos.append(self.tree.item(self.tree.selection())['values'][2],)
+        carritos.append(self.spin_temp.get(),)
+        carritos.append(self.tree.item(self.tree.selection())['values'][4],)
+        carritos.append(self.tree.item(self.tree.selection())['values'][5],)
         self.tree2.insert('', tk.END, values=carritos)
+        self.spin_temp.set("1")
+        self.totalxprod = self.totalxprod + (float(carritos[3]) * float(carritos[2]))
+        print(self.totalxprod)
+        self.total.delete(0, tk.END)
+        self.total.insert(0,self.totalxprod)
+        
+        #print(self.spin_temp)
+        #print(ttk.Spinbox)
+        #self.tree2.insert('', tk.END, values=self.tree.item(self.tree.selection())['values'][0],)
+        #self.tree2.insert('', tk.END, values=self.tree.item(self.tree.selection())['values'][1],)
         
     def item_seleccionado(self):
         item = self.tree.item(self.tree.selection())['text']
@@ -447,7 +467,7 @@ class Registro(ttk.Frame):
             17.0,
             391.0,
             anchor="nw",
-            text="Fecha de Nacimiento (AAAA-MM-DD)\n",
+            text="Fecha de Nacimiento (dd-mm-aa)\n",
             fill="#000000",
             font=("Nokora Bold", 20 * -1),
         )
