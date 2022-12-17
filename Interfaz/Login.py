@@ -447,7 +447,7 @@ class Registro(ttk.Frame):
             17.0,
             391.0,
             anchor="nw",
-            text="Fecha de Nacimiento (dd-mm-aa)\n",
+            text="Fecha de Nacimiento (AAAA-MM-DD)\n",
             fill="#000000",
             font=("Nokora Bold", 20 * -1),
         )
