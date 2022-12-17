@@ -6,9 +6,9 @@ import tkinter.messagebox
 import sqlite3
 from sqlite3 import Error
 
-from forms.form_usuario import UsuarioPanel
-from forms.form_usuario import UsuarioPanel
-from forms.form_admin import *
+#from forms.form_usuario import UsuarioPanel
+#from forms.form_usuario import UsuarioPanel
+#from forms.form_admin import *
 
 from pathlib import Path
 import sys
