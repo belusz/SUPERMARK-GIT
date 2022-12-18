@@ -202,11 +202,7 @@ class App(ttk.Frame):
                 Cliente(toplevel).grid()
         else:
             if self.email.get() == "" or self.clave.get() == "":
-                #tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
-                global usrId
-                usrId = 14
-                toplevel = tk.Toplevel(self.parent)
-                Cliente(toplevel).grid()
+                tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
             else:
                 tkinter.messagebox.showinfo(
                     "Error", "Usuario o Contraseña incorrecto", icon="error"
