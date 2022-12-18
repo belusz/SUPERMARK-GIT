@@ -2,15 +2,12 @@ from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 import tkinter.messagebox
-
+from datetime import date
 import sqlite3
 from sqlite3 import Error
-
 from forms.form_usuario import UsuarioPanel
 from forms.form_admin import AdminPanel
 from forms.form_admin import *
-
-#no funciona
 from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
@@ -42,7 +39,8 @@ def validate_user(email, clave):
     cur.execute("SELECT * FROM usuarios WHERE email = ? AND clave = ?", (email, clave))
     rows = cur.fetchall()
     global usrId
-    usrId = rows[0][0]
+    if len(rows) != 0:
+        usrId = rows[0][0]
     return True if len(rows) > 0 else False
 
 #verifico si el email ya existe en la bdd
@@ -204,7 +202,11 @@ class App(ttk.Frame):
                 Cliente(toplevel).grid()
         else:
             if self.email.get() == "" or self.clave.get() == "":
-                tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
+                #tkinter.messagebox.showinfo("Error", "Usuario o Contraseña vacíos")
+                global usrId
+                usrId = 14
+                toplevel = tk.Toplevel(self.parent)
+                Cliente(toplevel).grid()
             else:
                 tkinter.messagebox.showinfo(
                     "Error", "Usuario o Contraseña incorrecto", icon="error"
@@ -241,6 +243,8 @@ class Cliente(ttk.Frame):
         parent.rowconfigure(0, weight=1)
         parent.resizable(False, False)
         #ttk.Button(self, text="Cerrar", command=parent.destroy).grid()
+        #self.detalleprod = []
+        #self.totalprod = []
         # Etiqueta y Spinbox
         etiqueta_temp = ttk.Label(self,text="Cantidad:")
         etiqueta_temp.place(x=5, y=260, width=60)
@@ -256,11 +260,12 @@ class Cliente(ttk.Frame):
         #spin_temp.bind("<<Decrement>>", temp_disminuida)
 
         # definimos las columnas
-        columns = ('codigo', 'nombre', 'precio', 'stock', 'tipo', 'marca')
+        columns = ('productoId','codigo', 'nombre', 'precio', 'stock', 'tipo', 'marca')
         self.tree = ttk.Treeview(self, columns=columns, show='headings')
         self.tree.grid(row=1, column=1, sticky=(tk.N, tk.S, tk.E, tk.W))
 
         # definimos los encabezados
+        self.tree.heading('productoId', text='ProductoId')
         self.tree.heading('codigo', text='Codigo')
         self.tree.heading('nombre', text='Nombre')
         self.tree.heading('precio', text='Precio')
@@ -284,11 +289,12 @@ class Cliente(ttk.Frame):
         scrollbar.grid(row=1, column=2, sticky=(tk.N, tk.S))
 
         # 2 tabla - definimos las columnas
-        columns2 = ('codigo', 'nombre', 'precio', 'cantidad', 'tipo', 'marca')
+        columns2 = ('productoId','codigo', 'nombre', 'precio', 'cantidad', 'tipo', 'marca')
         self.tree2 = ttk.Treeview(self, columns=columns2, show='headings')
         self.tree2.place(x=1, y=350, width=1200)
 
         # definimos los encabezados
+        self.tree2.heading('productoId', text='ProductoId')
         self.tree2.heading('codigo', text='Codigo')
         self.tree2.heading('nombre', text='Nombre')
         self.tree2.heading('precio', text='Precio')
@@ -318,23 +324,27 @@ class Cliente(ttk.Frame):
         carritos.append(self.tree.item(self.tree.selection())['values'][0],)
         carritos.append(self.tree.item(self.tree.selection())['values'][1],)
         carritos.append(self.tree.item(self.tree.selection())['values'][2],)
+        carritos.append(self.tree.item(self.tree.selection())['values'][3],)
         carritos.append(self.spin_temp.get(),)
-        carritos.append(self.tree.item(self.tree.selection())['values'][4],)
         carritos.append(self.tree.item(self.tree.selection())['values'][5],)
+        carritos.append(self.tree.item(self.tree.selection())['values'][6],)
         self.tree2.insert('', tk.END, values=carritos)
         self.spin_temp.set("1")
-        self.totalxprod = self.totalxprod + (float(carritos[3]) * float(carritos[2]))
+        self.totalxprod = self.totalxprod + (float(carritos[4]) * float(carritos[3]))
         self.total.delete(0, tk.END)
         self.total.insert(0,self.totalxprod)
-        
+        #self.detalleprod.append(self.tree.item(self.tree.selection())['values'][1],)
+
     def DelCarrito(self):
-        a=(self.tree2.item(self.tree2.selection())['values'][2],)
-        b=(self.tree2.item(self.tree2.selection())['values'][3],)
+        a=(self.tree2.item(self.tree2.selection())['values'][3],)
+        b=(self.tree2.item(self.tree2.selection())['values'][4],)
+        #c=(self.tree2.item(self.tree2.selection())['values'][0])
         self.totalxprod = self.totalxprod - (float(a[0])*float(b[0]))
         self.tree2.delete(self.tree2.selection())
         self.total.delete(0, tk.END)
         self.total.insert(0,self.totalxprod)
-        
+        #self.detalleprod.remove(c)
+
     def item_seleccionado(self):
         item = self.tree.item(self.tree.selection())['text']
         item2 = self.tree.item(self.tree.selection())['values']
@@ -344,23 +354,41 @@ class Cliente(ttk.Frame):
     def FinCompra(self):
         con=create_connection('Supermark.db')
         tarjetas=select_all_tarjetas(con,(usrId,))
-        if len(tarjetas) == 0:
-            toplevel = tk.Toplevel(self.parent)
-            Tarjeta(toplevel).grid()
+        if self.totalxprod == 0:
+            messagebox.showinfo("Error","Para finalizar la compra debe agregar al menos un producto al carrito.")
         else:
-            messagebox.showinfo("Sistema Supermark","La compra se realizo correctamente. En las porximas 48 hs recibirá sus productos.")
-   
+            if len(tarjetas) == 0:
+                toplevel = tk.Toplevel(self.parent)
+                Tarjeta(toplevel).grid()
+            else:
+                self.Generar_comprobante()              
+                messagebox.showinfo("Sistema Supermark","La compra se realizo correctamente. En las porximas 48 hs recibirá sus productos.")
 
-        #cur = con.cursor()
-        #cur.execute("SELECT usuarioId FROM usuarios WHERE email = ?", (self.email))
-        #rows = cur.fetchall()
+    def Generar_comprobante(self):
+        comprobante = ["B",date.today(),self.totalxprod,usrId,1]
+        con=create_connection('Supermark.db')
+        create_comprobantes(con,comprobante)
+        comprobanteId = select_comprobanteId(con)
+        
+        #create_comprobantes(con,comprobante)
 
+        #comprobantes=select_all_tarjetas(con,(usrId,))
+        for i in range(len(self.tree2.get_children())):
+            item_count = self.tree2.get_children()
+            #self.totalprod.append(self.tree2.item(item_count[i])['values'][0],)
+            #self.totalprod.append(self.tree2.item(item_count[i])['values'][3],)
+            #self.totalprod.append(self.tree2.item(item_count[i])['values'][4],)
+            #print(self.totalprod)
+            dcantidad = self.tree2.item(item_count[i])['values'][4]
+            dprecio = self.tree2.item(item_count[i])['values'][3]
+            dproducto = self.tree2.item(item_count[i])['values'][0]
 
-
-        #check_tarjeta(con,self)
-        #create_usuarios(con,usuario)
-        #tkinter.messagebox.showinfo("Éxito", "Registrado con éxito")
-
+            detalle_compra = [int(dcantidad),float(dprecio),int(dproducto),int(comprobanteId[0][0])]
+            create_detalles_compra(con, detalle_compra)            
+            
+            #cantidad de registro
+            #print(len(self.tree2.get_children()))
+        #self.detalleprod
 
 class Administrador(ttk.Frame):
     def __init__(self, parent):
@@ -704,24 +732,33 @@ class Tarjeta(ttk.Frame):
         self.banco = tk.StringVar()
         self.titular = tk.StringVar()
         self.fechaCaducidad = tk.StringVar()
+        self.pin = tk.StringVar()
         
         
         ttk.Label(self, text="Numero:").grid(pady=5, row=0, column=0)
         ttk.Label(self, text="Banco:").grid( pady=5, row=1, column=0)
         ttk.Label(self, text="Titular:").grid( pady=5, row=2, column=0)
         ttk.Label(self, text="Fecha de Caducidad:").grid( pady=5, row=3, column=0)
+        ttk.Label(self, text="Codigo de Seguridad:").grid( pady=5, row=4, column=0)
 
         ttk.Entry(self, width=40, textvariable=self.numero).grid(padx=5, row=0, column=1)
         ttk.Entry(self, width=40, textvariable=self.banco).grid(padx=5, row=1, column=1)
         ttk.Entry(self, width=40, textvariable=self.titular).grid(padx=5, row=2, column=1)
         ttk.Entry(self, width=40, textvariable=self.fechaCaducidad).grid(padx=5, row=3, column=1)
+        ttk.Entry(self, width=40, textvariable=self.pin).grid(padx=5, row=4, column=1)
         
         
         ttk.Button(self, text="Cancelar", command=parent.destroy).grid(padx=5, row=6, column=1)
         ttk.Button(self, text="Finalizar", command=lambda: self.add_tarjeta()).grid(padx=5, row=6, column=0)
-        
-       
-                           
+
+    def add_tarjeta(self):
+        if self.numero.get() == "" or self.banco.get() == "" or self.titular.get() == "" or self.fechaCaducidad.get() == "" or self.pin.get() == "":
+            tkinter.messagebox.showinfo("Error", "Debe completar todos los campos")
+        else:
+            tarjeta=[self.numero.get(),self.banco.get(),self.titular.get(),self.fechaCaducidad.get(),usrId]
+            con=create_connection('Supermark.db')
+            create_tarjetas(con,tarjeta)
+            tkinter.messagebox.showinfo("Éxito", "Tarjeta registrada con éxito")
                               
 
 root = tk.Tk()
