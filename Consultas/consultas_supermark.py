@@ -1,7 +1,6 @@
 import sqlite3
 from sqlite3 import Error
 
-
 def create_connection(db_file):
     """ create a database connection to the SQLite database
         specified by the db_file
@@ -13,7 +12,6 @@ def create_connection(db_file):
         conn = sqlite3.connect(db_file)
     except Error as e:
         print(e)
-
     return conn
 
 def select_all_descuentos(conn):
@@ -24,10 +22,8 @@ def select_all_descuentos(conn):
     """
     cur = conn.cursor()
     cur.execute("SELECT * FROM descuentos")
-
     rows = cur.fetchall()
     # print(rows)
-
     return rows
 
 def select_userid(conn,email):
@@ -35,7 +31,6 @@ def select_userid(conn,email):
     cur.execute("SELECT usuarioId FROM usuarios WHERE email= ?",email)
     row = cur.fetchone()
     return row
-
 
 def select_descuento_porcentaje(conn):
     """
@@ -45,12 +40,9 @@ def select_descuento_porcentaje(conn):
     """
     cur = conn.cursor()
     cur.execute("SELECT count(*) FROM descuento WHERE porcentaje = 25")
-
     rows = cur.fetchone()
     # print(rows)
-
     return rows
-
 
 def update_descuento(conn, descuento):
     """
@@ -74,28 +66,46 @@ def select_all_productos(conn):
     :return:
     """
     cur = conn.cursor()
-    cur.execute("SELECT codigo, nombre, precio, stock, tipoId, marca FROM productos WHERE stock > 0")
-
+    cur.execute("SELECT productoId, codigo, nombre, precio, stock, tipos.descripcion, marca FROM productos INNER JOIN tipos ON tipos.tipoId = productos.tipoId WHERE stock > 0")
     rows = cur.fetchall()
     # print(rows)
+    return rows
 
+def select_all_tarjetas(conn,usrId):
+    """
+    Query all rows in the tasks table
+    :param conn: the Connection object
+    :return:
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT numero, banco, titular, fechaCaducidad FROM tarjetas WHERE usuarioId = ?", usrId)
+    rows = cur.fetchall()
+    # print(rows)
+    return rows
+
+def select_comprobanteId(conn):
+    """
+    Query all rows in the tasks table
+    :param conn: the Connection object
+    :return:
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT MAX(comprobanteId) FROM comprobantes")
+    rows = cur.fetchall()
+    # print(rows)
     return rows
 
 def main():
     database = r"Supermark.db"
-
     # create a database connection
-    conn = create_connection(database)
-    
+    conn = create_connection(database) 
     with conn:
-
         print("Mostrar descuentos")
         print(select_all_descuentos(conn))
-        
+        print(select_all_tarjetas(conn,"5"))
         print("Mostrar id de usuario según email")
-        print(select_userid(conn,("chiqui@hotmail.com",)))
-        print(select_userid(conn,"chiqui@hotmail.com"))
+        print(select_userid(conn,("abelu89@gmail.com",)))
+        print(select_comprobanteId(conn))       
 
-        
 if __name__ == '__main__':
     main()
