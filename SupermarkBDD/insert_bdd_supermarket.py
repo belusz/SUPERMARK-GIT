@@ -51,7 +51,7 @@ def create_productos(conn, producto):
     :param producto: list of values
     :return:
     """
-    sql = ''' INSERT INTO productos(codigo, nombre, marca, precio, stock, tipoId)
+    sql = ''' INSERT INTO productos(codigo, nombre, precio, stock, tipoId, marca)
               VALUES(?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, producto)
