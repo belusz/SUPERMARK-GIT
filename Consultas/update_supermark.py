@@ -29,7 +29,41 @@ def update_usuarios_clave(conn, usuario):
     cur = conn.cursor()
     cur.execute(sql, usuario)
     conn.commit()
-    
+
+
+def update_producto(conn, codigo,nombre,precio,stock,tipo,marca,id):
+    """
+    update priority, begin_date, and end date of a task
+    :param conn:
+    :param task:
+    :return: project id
+    """
+    sql = ''' UPDATE productos
+              SET codigo = ?
+                , nombre = ?
+                , precio = ?
+                , stock  = ?
+                , tipoId  = ?
+                , marca  = ?
+              WHERE productoId = ?'''
+    cur = conn.cursor()
+    cur.execute(sql, (codigo,nombre,precio,stock,tipo,marca,id))
+    conn.commit()
+
+def update_stock(conn, stock,id):
+    """
+    update priority, begin_date, and end date of a task
+    :param conn:
+    :param task:
+    :return: project id
+    """
+    sql = ''' UPDATE productos
+              SET stock  = ?
+              WHERE productoId = ?'''
+    cur = conn.cursor()
+    cur.execute(sql,(stock,id))
+    conn.commit()
+
 def update_usuarios_atributo(conn, atributo ,usuario):
     """
     update priority, begin_date, and end date of a task
@@ -68,7 +102,9 @@ def main():
         #update_usuarios_atributo(conn,"clave",("superFelipe",1))
         #update_table(conn,"usuarios","clave","usuarioId",("superFelipon",1))
         #update_table(conn,"usuarios","dni","usuarioId",(34331999,1))
-        update_table(conn,"productos","stock","productoId",(300,2))
+        #update_table(conn,"productos","stock","productoId",(300,2))
+        update_stock(conn, 4,1)
+        #update_producto(conn, 1,"test",1,1,1,1,1)
 
 if __name__ == '__main__':
     main()
