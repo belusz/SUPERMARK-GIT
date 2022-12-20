@@ -58,6 +58,20 @@ def create_productos(conn, producto):
     conn.commit()
     return cur.lastrowid
 
+def create_productos_lista(conn, producto):
+    """
+    Create a new task
+    :param conn: Connection to the SQLite database
+    :param producto: list of values
+    :return:
+    """
+    sql = ''' INSERT INTO productos(codigo, nombre, marca, precio, stock, tipoId)
+              VALUES(?,?,?,?,?,?) '''
+    cur = conn.cursor()
+    cur.execute(sql, producto)
+    conn.commit()
+    return cur.lastrowid
+
 def create_usuarios(conn, usuario):
     """
     Create a new task
@@ -290,9 +304,13 @@ def insert_data(database):
             create_detalles_compra(conn, detalle)
         
         # create a new producto
-        for producto in productos: 
-            create_productos(conn, producto)
+        # for producto in productos: 
+        #     create_productos(conn, producto)
         
+        # create a new producto
+        for producto in productos: 
+            create_productos_lista(conn, producto)
+
         print("Valores insertados")
         
 
